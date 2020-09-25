@@ -1,3 +1,11 @@
-node_modules/
-.next/
+.vscode
+*.env
 .DS_Store
+arangodb.log
+
+data/
+session
+__pycache__
+docker-compose.yml
+laciudad-427d4e6920f2.json
+*.log
