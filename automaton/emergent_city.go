@@ -35,7 +35,7 @@ func NewEmergentCity() *EmergentCity {
 // Run ...
 func (ec *EmergentCity) Run() {
 	ebiten.SetRunnableOnUnfocused(true)
-	ebiten.SetMaxTPS(20)
+	ebiten.SetMaxTPS(30)
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Emergence Life")
@@ -48,11 +48,12 @@ func (ec *EmergentCity) insertationRoutine(index int, duration time.Duration) {
 	start := time.Now()
 	final := start.Add(duration / 2)
 
-	ec.city.categories[index].SetHighLifeMode(HighLife456)
-	// ec.city.categories[index].SetHighLifeMode(HighLife4)
+	// ec.city.categories[index].SetHighLifeMode(HighLife456)
+
+	ec.city.categories[index].SetHighLifeMode(HighLife4)
 
 	for time.Now().Before(final) {
-		ec.city.categories[index].gol.RandomFill(0.03)
+		ec.city.categories[index].gol.RandomFill(0.5)
 		time.Sleep(55 * time.Millisecond)
 	}
 
@@ -60,10 +61,12 @@ func (ec *EmergentCity) insertationRoutine(index int, duration time.Duration) {
 	// time.Sleep(duration / 2)
 
 	// ec.city.categories[index].SetHighLifeMode(HighLife6)
-	time.Sleep(duration / 2 / 4)
+
+	// time.Sleep(duration / 2 / 4)
 	// ec.city.categories[index].SetHighLifeMode(HighLife7)
+
 	time.Sleep(duration / 2 / 4)
-	ec.city.categories[index].SetHighLifeMode(HighLife4)
+	ec.city.categories[index].SetHighLifeMode(HighLife5)
 	time.Sleep(duration / 2 / 4)
 	ec.city.categories[index].SetHighLifeMode(HighLife6)
 	time.Sleep(duration / 2 / 4)
@@ -78,6 +81,7 @@ func (ec *EmergentCity) insertEvent(i int, imageURL string, duration time.Durati
 	ec.mu.Lock()
 	ec.city.categories[i].SetImage(imageURL)
 	ec.city.categories[i].SetRelevance(relevance)
+
 	go ec.insertationRoutine(i, duration)
 	ec.mu.Unlock()
 }

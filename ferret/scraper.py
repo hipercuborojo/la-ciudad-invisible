@@ -1,4 +1,4 @@
-from ferret.crop import crop_image
+from cropper import crop_image
 import os
 import re
 from .post import CleanPost
@@ -10,7 +10,7 @@ import time
 from typing import List, Tuple
 from minio.api import Minio
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from itertools import dropwhile, takewhile
 from random import random
@@ -47,7 +47,12 @@ def fetch_loop(store: Minio, username: str, password: str, query: str, delay_sec
     while True:
         posts = extract_posts(worker_endpoint, username, password, query)
 
-        since = datetime.now() - timedelta(seconds=delay_seconds+period_seconds)
+        if os.getenv("PROD", False):
+            now = datetime.now() - timedelta(hours=5)
+        else:
+            now = datetime.now()
+
+        since = now - timedelta(seconds=delay_seconds+period_seconds)
         until = since + timedelta(seconds=period_seconds)
 
         print(since, "-", until, f"[{len(posts)}]")
@@ -140,8 +145,9 @@ def extract_posts(worker_endpoint: str, username: str, password: str, query: str
     if len(data) < 2:  # error
         err = data["error"] if "error" in data else data
         print(err)
-        if "error" in data and retry < 3:
+        if "error" in data and retry < 5:
             print("scraping retrying")
+            time.sleep(int(random()*3))
             return extract_posts(worker_endpoint, username, password, query, retry + 1)
         print("scraping abort")
         return []
